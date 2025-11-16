@@ -42,7 +42,7 @@ Replace `your-username` and `repository-name` with your actual GitHub username a
 
 ### Local Development
 
-**Note**: Local development may have issues with native module compilation (`gl` package). The project is designed to run primarily in GitHub Actions (Ubuntu environment).
+**Note**: The project uses `node-canvas` for rendering, which works on all platforms including macOS, Linux, and Windows.
 
 To generate the 3D contribution graph locally (if your environment supports it):
 
@@ -57,7 +57,7 @@ npm run generate
 
 The generated GIF will be saved to `public/contribution-graph.gif`.
 
-**If you encounter build errors**: This is expected on some systems (especially macOS/Windows). The code will work perfectly in GitHub Actions (Ubuntu).
+The project now uses Canvas 2D rendering instead of WebGL, so it works reliably on all platforms without complex native dependencies.
 
 ### GitHub Setup
 
@@ -97,8 +97,7 @@ github-contributions-3d/
 ├── src/
 │   ├── index.ts              # Main entry point
 │   ├── fetchContributions.ts # Fetch data from GitHub API
-│   ├── generate3D.ts         # Create 3D scene with Three.js
-│   └── renderGif.ts          # Render GIF animation
+│   └── renderGif.ts          # Render GIF animation with 3D projection
 ├── dist/                     # Compiled JavaScript (generated)
 ├── public/
 │   ├── index.html            # GitHub Pages landing page
@@ -114,8 +113,7 @@ github-contributions-3d/
 ## Technologies
 
 - **TypeScript** - Type-safe development
-- **Three.js** - 3D graphics
-- **gl** - Hardware-accelerated WebGL in Node.js
+- **node-canvas** - 2D Canvas rendering with 3D projection
 - **gifencoder** - GIF generation
 - **@octokit/rest** - GitHub API client
 

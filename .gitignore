@@ -27,4 +27,4 @@ build/
 *.tsbuildinfo
 
 # Keep the generated GIF in version control
-!public/contribution-graph.gif
+public/contribution-graph.gif

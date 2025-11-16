@@ -1,5 +1,8 @@
+// Load .env file if it exists (for local development)
+import { config } from 'dotenv';
+config();
+
 import { fetchContributions } from './fetchContributions.js';
-import { create3DScene } from './generate3D.js';
 import { renderGif } from './renderGif.js';
 
 /**
@@ -18,14 +21,17 @@ async function main(): Promise<void> {
     console.log(`Total contributions: ${contributionData.totalContributions}`);
     console.log(`Weeks of data: ${contributionData.weeks}`);
 
-    // Create 3D scene
-    console.log('Creating 3D scene...');
-    const sceneData = create3DScene(contributionData, 800, 600);
-
-    // Render GIF
-    console.log('Rendering GIF animation...');
+    // Render animated GIF
+    console.log('Rendering 3D contribution graph animation...');
     const outputPath = './public/contribution-graph.gif';
-    await renderGif(sceneData, outputPath, 800, 600, 60, 50);
+
+    // Ensure public directory exists
+    const fs = await import('fs');
+    if (!fs.existsSync('./public')) {
+      fs.mkdirSync('./public', { recursive: true });
+    }
+
+    await renderGif(contributionData, outputPath, 800, 600, 30, 100);
 
     console.log('Done! GIF generated successfully.');
   } catch (error) {

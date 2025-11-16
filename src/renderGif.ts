@@ -1,38 +1,82 @@
 import GIFEncoder from 'gifencoder';
-import * as THREE from 'three';
+import { createCanvas } from 'canvas';
 import fs from 'fs';
-// @ts-ignore - gl package doesn't have types
-import createContext from 'gl';
-import { SceneData } from './generate3D.js';
+import { ContributionData } from './fetchContributions.js';
 
 /**
- * Render GIF animation of 3D contribution graph using WebGL
+ * Render animated GIF of 3D contribution graph with bars growing from bottom to top
+ * Fixed viewpoint, animating bar heights
  */
 export async function renderGif(
-  sceneData: SceneData,
+  contributionData: ContributionData,
   outputPath: string,
   width: number = 800,
   height: number = 600,
-  frames: number = 60,
-  delay: number = 50
+  frames: number = 30,
+  delay: number = 100
 ): Promise<void> {
-  const { scene, camera, barGroup } = sceneData;
+  const { contributions } = contributionData;
 
-  // Create headless WebGL context
-  const glContext = createContext(width, height, {
-    preserveDrawingBuffer: true
+  // Isometric view angle (similar to the reference image)
+  const rotation = -Math.PI / 6; // -30 degrees for left-to-right diagonal view
+
+  // Calculate the bounds of the graph first to determine canvas size
+  const tempSorted = contributions.map(c => {
+    const x = c.week;
+    const z = c.day;
+    // Isometric projection
+    const rotatedX = x * Math.cos(rotation) - z * Math.sin(rotation);
+    const rotatedZ = x * Math.sin(rotation) + z * Math.cos(rotation);
+    return { rotatedX, rotatedZ, count: c.count };
   });
 
-  // Create renderer with headless GL context
-  const renderer = new THREE.WebGLRenderer({
-    context: glContext as any,
-    antialias: true
+  const minX = Math.min(...tempSorted.map(c => c.rotatedX));
+  const maxX = Math.max(...tempSorted.map(c => c.rotatedX));
+  const minZ = Math.min(...tempSorted.map(c => c.rotatedZ));
+  const maxZ = Math.max(...tempSorted.map(c => c.rotatedZ));
+  const maxHeight = Math.max(...contributions.map(c => c.count)) * 0.1;
+
+  // Drawing parameters
+  const padding = 5;
+  const heightScale = 3;
+  const barWidthRatio = 0.9;
+
+  // Calculate dimensions
+  const graphWidth = maxX - minX;
+  const graphDepth = maxZ - minZ;
+
+  // Calculate scale based on width
+  const scale = (width - padding * 2) / (graphWidth + barWidthRatio);
+
+  // Calculate all screen positions to find actual bounds
+  const boxWidth = scale * barWidthRatio;
+  const boxDepth = scale * barWidthRatio;
+
+  // Calculate screen Y positions for all bars
+  const screenPositions = tempSorted.map(({ rotatedX, rotatedZ, count }) => {
+    const barHeight = count * 0.1;
+    const barVisualHeight = barHeight * scale * heightScale;
+
+    // Y position at the top of the bar (without barDepth offset for top face)
+    const topY = (rotatedZ - minZ) * scale * 0.5 - barVisualHeight;
+    // Y position at the bottom of the bar
+    const bottomY = (rotatedZ - minZ) * scale * 0.5;
+
+    return { topY, bottomY, barVisualHeight };
   });
-  renderer.setSize(width, height);
-  renderer.setClearColor(0x0d1117, 1);
+
+  const minTopY = Math.min(...screenPositions.map(p => p.topY - boxDepth));
+  const maxBottomY = Math.max(...screenPositions.map(p => p.bottomY));
+
+  const canvasWidth = Math.ceil((graphWidth + barWidthRatio) * scale + padding * 2);
+  const canvasHeight = Math.ceil(maxBottomY - minTopY + padding * 2);
+
+  // Create canvas with exact size
+  const canvas = createCanvas(canvasWidth, canvasHeight);
+  const ctx = canvas.getContext('2d');
 
   // Create GIF encoder
-  const encoder = new GIFEncoder(width, height);
+  const encoder = new GIFEncoder(canvasWidth, canvasHeight);
   const stream = fs.createWriteStream(outputPath);
 
   encoder.createReadStream().pipe(stream);
@@ -41,44 +85,96 @@ export async function renderGif(
   encoder.setDelay(delay); // Frame delay in ms
   encoder.setQuality(10); // Image quality (1-20, lower is better)
 
-  // Render each frame
-  for (let i = 0; i < frames; i++) {
-    const rotation = (i / frames) * Math.PI * 2; // Full 360-degree rotation
-    barGroup.rotation.y = rotation;
+  // Position graph - align top to padding
+  const offsetX = minX;
+  const offsetZ = minZ;
+  const centerX = padding;
+  const centerY = padding - minTopY; // Offset to make top align with padding
 
-    // Render the scene
-    renderer.render(scene, camera);
+  // Precompute sorted contributions with rotated positions
+  const sorted = contributions
+    .map(c => {
+      const x = c.week;
+      const z = c.day;
+      // Isometric projection
+      const rotatedX = x * Math.cos(rotation) - z * Math.sin(rotation);
+      const rotatedZ = x * Math.sin(rotation) + z * Math.cos(rotation);
+      return { ...c, rotatedX, rotatedZ };
+    })
+    .sort((a, b) => a.rotatedZ - b.rotatedZ); // Front to back for proper depth
 
-    // Read pixels from WebGL context
-    const pixels = new Uint8Array(width * height * 4);
-    glContext.readPixels(0, 0, width, height, glContext.RGBA, glContext.UNSIGNED_BYTE, pixels);
+  // Render each frame with growing bars
+  for (let frame = 0; frame < frames; frame++) {
+    const progress = (frame + 1) / frames; // 0 to 1
 
-    // Flip image vertically (WebGL coordinates are bottom-up)
-    const flippedPixels = new Uint8Array(width * height * 4);
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const srcIdx = (y * width + x) * 4;
-        const dstIdx = ((height - 1 - y) * width + x) * 4;
-        flippedPixels[dstIdx] = pixels[srcIdx];
-        flippedPixels[dstIdx + 1] = pixels[srcIdx + 1];
-        flippedPixels[dstIdx + 2] = pixels[srcIdx + 2];
-        flippedPixels[dstIdx + 3] = pixels[srcIdx + 3];
+    // Clear canvas with dark background
+    ctx.fillStyle = '#0d1117';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw each bar with animated height
+    sorted.forEach(({ count, rotatedX, rotatedZ }) => {
+      const targetBarHeight = Math.max(0.1, count * 0.1);
+      const barHeight = targetBarHeight * progress; // Animate from 0 to target height
+
+      // Calculate screen position with isometric projection
+      const screenX = centerX + (rotatedX - offsetX) * scale;
+      const screenY = centerY - barHeight * scale * heightScale + (rotatedZ - offsetZ) * scale * 0.5;
+
+      // Color based on contribution count
+      let color: string;
+      if (count === 0) color = '#161b22';
+      else if (count < 5) color = '#0e4429';
+      else if (count < 10) color = '#006d32';
+      else if (count < 15) color = '#26a641';
+      else color = '#39d353';
+
+      // Draw isometric 3D box
+      const boxWidth = scale * barWidthRatio;
+      const boxDepth = scale * barWidthRatio;
+      const barVisualHeight = barHeight * scale * heightScale;
+
+      if (barVisualHeight > 0) {
+        // Left face (darker)
+        ctx.fillStyle = adjustBrightness(color, 0.6);
+        ctx.beginPath();
+        ctx.moveTo(screenX, screenY + barVisualHeight);
+        ctx.lineTo(screenX - boxWidth / 2, screenY + barVisualHeight - boxDepth / 2);
+        ctx.lineTo(screenX - boxWidth / 2, screenY - boxDepth / 2);
+        ctx.lineTo(screenX, screenY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Right face (medium)
+        ctx.fillStyle = adjustBrightness(color, 0.8);
+        ctx.beginPath();
+        ctx.moveTo(screenX, screenY + barVisualHeight);
+        ctx.lineTo(screenX + boxWidth / 2, screenY + barVisualHeight - boxDepth / 2);
+        ctx.lineTo(screenX + boxWidth / 2, screenY - boxDepth / 2);
+        ctx.lineTo(screenX, screenY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Top face (lightest)
+        ctx.fillStyle = adjustBrightness(color, 1.2);
+        ctx.beginPath();
+        ctx.moveTo(screenX, screenY);
+        ctx.lineTo(screenX - boxWidth / 2, screenY - boxDepth / 2);
+        ctx.lineTo(screenX, screenY - boxDepth);
+        ctx.lineTo(screenX + boxWidth / 2, screenY - boxDepth / 2);
+        ctx.closePath();
+        ctx.fill();
       }
-    }
+    });
 
     // Add frame to GIF
-    encoder.addFrame(flippedPixels);
+    encoder.addFrame(ctx.getImageData(0, 0, canvasWidth, canvasHeight).data);
 
-    if ((i + 1) % 10 === 0 || i === frames - 1) {
-      console.log(`Rendering frame ${i + 1}/${frames}`);
+    if ((frame + 1) % 10 === 0 || frame === frames - 1) {
+      console.log(`Rendering frame ${frame + 1}/${frames}`);
     }
   }
 
   encoder.finish();
-
-  // Clean up
-  renderer.dispose();
-  (glContext as any).getExtension('STACKGL_destroy_context')?.destroy();
 
   return new Promise<void>((resolve, reject) => {
     stream.on('finish', () => {
@@ -87,4 +183,19 @@ export async function renderGif(
     });
     stream.on('error', reject);
   });
+}
+
+/**
+ * Adjust color brightness
+ */
+function adjustBrightness(hex: string, factor: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  const newR = Math.min(255, Math.floor(r * factor));
+  const newG = Math.min(255, Math.floor(g * factor));
+  const newB = Math.min(255, Math.floor(b * factor));
+
+  return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
 }
