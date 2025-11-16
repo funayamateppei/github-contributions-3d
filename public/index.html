@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Contributions 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #58a6ff;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #8b949e;
+        }
+
+        .graph-container {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .info {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        .info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #58a6ff;
+        }
+
+        .info p {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GitHub Contributions 3D</h1>
+        <p>A 3D visualization of GitHub contribution activity</p>
+
+        <div class="graph-container">
+            <img src="contribution-graph.gif" alt="3D GitHub Contributions Graph" id="contributionGraph">
+        </div>
+
+        <div class="info">
+            <h2>About</h2>
+            <p>This visualization shows GitHub contribution activity as a 3D bar graph.</p>
+            <p>Each bar represents a day, with the height corresponding to the number of contributions.</p>
+            <p>The graph is automatically updated daily via GitHub Actions.</p>
+        </div>
+
+        <div class="footer">
+            <p>Generated with <a href="https://github.com" target="_blank">GitHub API</a> and <a href="https://threejs.org" target="_blank">Three.js</a></p>
+            <p id="lastUpdated">Last updated: <span id="updateTime">Loading...</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Display last update time
+        const img = document.getElementById('contributionGraph');
+        img.onload = function() {
+            fetch('contribution-graph.gif', { method: 'HEAD' })
+                .then(response => {
+                    const lastModified = response.headers.get('last-modified');
+                    if (lastModified) {
+                        const date = new Date(lastModified);
+                        document.getElementById('updateTime').textContent = date.toLocaleString();
+                    } else {
+                        document.getElementById('updateTime').textContent = new Date().toLocaleString();
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('updateTime').textContent = 'Unknown';
+                });
+        };
+
+        img.onerror = function() {
+            document.getElementById('updateTime').textContent = 'Image not available';
+        };
+    </script>
+</body>
+</html>

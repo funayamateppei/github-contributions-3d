@@ -1,0 +1,34 @@
+{
+  "name": "github-contributions-3d",
+  "version": "1.0.0",
+  "description": "Generate 3D GitHub contribution graph as animated GIF",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "generate": "npm run build && node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "github",
+    "contributions",
+    "3d",
+    "visualization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "canvas": "^2.11.2",
+    "gifencoder": "^2.0.1",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@types/gifencoder": "^2.0.3",
+    "@types/node": "^20.10.0",
+    "@types/three": "^0.160.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
