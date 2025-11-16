@@ -42,7 +42,7 @@ Replace `your-username` and `repository-name` with your actual GitHub username a
 
 ### Local Development
 
-**Note**: Local development may have issues with native module compilation (`headless-gl`). The project is designed to run primarily in GitHub Actions (Ubuntu environment).
+**Note**: Local development may have issues with native module compilation (`gl` package). The project is designed to run primarily in GitHub Actions (Ubuntu environment).
 
 To generate the 3D contribution graph locally (if your environment supports it):
 
@@ -115,7 +115,7 @@ github-contributions-3d/
 
 - **TypeScript** - Type-safe development
 - **Three.js** - 3D graphics
-- **headless-gl** - Hardware-accelerated WebGL in Node.js
+- **gl** - Hardware-accelerated WebGL in Node.js
 - **gifencoder** - GIF generation
 - **@octokit/rest** - GitHub API client
 

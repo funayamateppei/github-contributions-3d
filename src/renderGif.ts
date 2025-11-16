@@ -1,8 +1,8 @@
 import GIFEncoder from 'gifencoder';
 import * as THREE from 'three';
 import fs from 'fs';
-// @ts-ignore - headless-gl package doesn't have types
-import createContext from 'headless-gl';
+// @ts-ignore - gl package doesn't have types
+import createContext from 'gl';
 import { SceneData } from './generate3D.js';
 
 /**

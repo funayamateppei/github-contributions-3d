@@ -23,7 +23,7 @@
     "canvas": "^2.11.2",
     "gifencoder": "^2.0.1",
     "three": "^0.160.0",
-    "headless-gl": "^7.0.0"
+    "gl": "^6.0.2"
   },
   "devDependencies": {
     "@types/gifencoder": "^2.0.3",
