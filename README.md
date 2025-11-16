@@ -18,12 +18,12 @@ A 3D visualization of GitHub contribution activity, automatically generated dail
 You can embed the generated GIF directly in your GitHub profile README (works with both public and private repositories):
 
 ```markdown
-![GitHub Contributions 3D](https://raw.githubusercontent.com/your-username/repository-name/main/public/contribution-graph.gif)
+![GitHub Contributions 3D](https://raw.githubusercontent.com/your-username/repository-name/assets/contribution-graph.gif)
 ```
 
 Replace `your-username` and `repository-name` with your actual GitHub username and repository name.
 
-**Note**: This uses GitHub's raw content URL, which works even for private repositories when you're logged in to GitHub.
+**Note**: This uses an orphan `assets` branch to store the GIF, keeping your main branch history clean. The raw content URL works even for private repositories when you're logged in to GitHub.
 
 ## Setup
 
@@ -77,15 +77,15 @@ The generated GIF will be saved to `public/contribution-graph.gif`.
    - Wait for the workflow to complete (about 2-3 minutes)
 
 4. **Use the GIF in your profile**:
-   - The GIF will be committed to `public/contribution-graph.gif`
+   - The GIF will be committed to the `assets` branch as `contribution-graph.gif`
    - Use the raw GitHub URL in your profile README:
    ```markdown
-   ![GitHub Contributions 3D](https://raw.githubusercontent.com/your-username/repository-name/main/public/contribution-graph.gif)
+   ![GitHub Contributions 3D](https://raw.githubusercontent.com/your-username/repository-name/assets/contribution-graph.gif)
    ```
 
 The workflow automatically:
 - Generates the 3D contribution graph as a GIF
-- Commits it to the repository
+- Commits it to the `assets` orphan branch (keeps main branch clean)
 - Runs daily at 00:00 UTC
 - Can be manually triggered anytime
 - Works with private repositories (GIF visible only to you when logged in)

@@ -36,12 +36,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run generate
 
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'Update 3D contribution graph [skip ci]'
-          file_pattern: 'public/contribution-graph.gif'
-          commit_user_name: 'github-actions[bot]'
-          commit_user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
-          skip_dirty_check: false
+      - name: Push to assets branch
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Create or checkout orphan assets branch
+          git fetch origin assets || true
+          if git rev-parse --verify origin/assets >/dev/null 2>&1; then
+            git checkout assets
+          else
+            git checkout --orphan assets
+            git rm -rf .
+          fi
+
+          # Copy the generated GIF
+          cp public/contribution-graph.gif contribution-graph.gif
+
+          # Commit and push to assets branch
+          git add contribution-graph.gif
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update 3D contribution graph"
+            git push origin assets
+          fi
