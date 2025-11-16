@@ -17,59 +17,47 @@ export async function renderGif(
 ): Promise<void> {
   const { contributions } = contributionData;
 
-  // Isometric view angle (similar to the reference image)
-  const rotation = -Math.PI / 6; // -30 degrees for left-to-right diagonal view
+  // Drawing parameters
+  const PADDING = 5;
+  const HEIGHT_SCALE = 3;
+  const BAR_WIDTH_RATIO = 0.9;
+  const ROTATION = (45 * Math.PI) / 180;
+  const DEPTH_PROJECTION_FACTOR = 0.5;
 
-  // Calculate the bounds of the graph first to determine canvas size
+  // Calculate rotated positions for all contributions
   const tempSorted = contributions.map(c => {
     const x = c.week;
     const z = c.day;
-    // Isometric projection
-    const rotatedX = x * Math.cos(rotation) - z * Math.sin(rotation);
-    const rotatedZ = x * Math.sin(rotation) + z * Math.cos(rotation);
+    const rotatedX = x * Math.cos(ROTATION) - z * Math.sin(ROTATION);
+    const rotatedZ = x * Math.sin(ROTATION) + z * Math.cos(ROTATION);
     return { rotatedX, rotatedZ, count: c.count };
   });
 
+  // Calculate bounds
   const minX = Math.min(...tempSorted.map(c => c.rotatedX));
   const maxX = Math.max(...tempSorted.map(c => c.rotatedX));
   const minZ = Math.min(...tempSorted.map(c => c.rotatedZ));
-  const maxZ = Math.max(...tempSorted.map(c => c.rotatedZ));
-  const maxHeight = Math.max(...contributions.map(c => c.count)) * 0.1;
-
-  // Drawing parameters
-  const padding = 5;
-  const heightScale = 3;
-  const barWidthRatio = 0.9;
-
-  // Calculate dimensions
-  const graphWidth = maxX - minX;
-  const graphDepth = maxZ - minZ;
 
   // Calculate scale based on width
-  const scale = (width - padding * 2) / (graphWidth + barWidthRatio);
+  const graphWidth = maxX - minX;
+  const scale = (width - PADDING * 2) / (graphWidth + BAR_WIDTH_RATIO);
+  const boxDepth = scale * BAR_WIDTH_RATIO;
 
-  // Calculate all screen positions to find actual bounds
-  const boxWidth = scale * barWidthRatio;
-  const boxDepth = scale * barWidthRatio;
-
-  // Calculate screen Y positions for all bars
-  const screenPositions = tempSorted.map(({ rotatedX, rotatedZ, count }) => {
+  // Calculate screen Y positions for all bars to determine canvas height
+  const screenYPositions = tempSorted.map(({ rotatedZ, count }) => {
     const barHeight = count * 0.1;
-    const barVisualHeight = barHeight * scale * heightScale;
-
-    // Y position at the top of the bar (without barDepth offset for top face)
-    const topY = (rotatedZ - minZ) * scale * 0.5 - barVisualHeight;
-    // Y position at the bottom of the bar
-    const bottomY = (rotatedZ - minZ) * scale * 0.5;
-
-    return { topY, bottomY, barVisualHeight };
+    const barVisualHeight = barHeight * scale * HEIGHT_SCALE;
+    const topY = (rotatedZ - minZ) * scale * DEPTH_PROJECTION_FACTOR - barVisualHeight;
+    const bottomY = (rotatedZ - minZ) * scale * DEPTH_PROJECTION_FACTOR;
+    return { topY, bottomY };
   });
 
-  const minTopY = Math.min(...screenPositions.map(p => p.topY - boxDepth));
-  const maxBottomY = Math.max(...screenPositions.map(p => p.bottomY));
+  const minTopY = Math.min(...screenYPositions.map(p => p.topY - boxDepth));
+  const maxBottomY = Math.max(...screenYPositions.map(p => p.bottomY));
 
-  const canvasWidth = Math.ceil((graphWidth + barWidthRatio) * scale + padding * 2);
-  const canvasHeight = Math.ceil(maxBottomY - minTopY + padding * 2);
+  // Calculate exact canvas dimensions
+  const canvasWidth = Math.ceil((graphWidth + BAR_WIDTH_RATIO) * scale + PADDING * 2);
+  const canvasHeight = Math.ceil(maxBottomY - minTopY + PADDING * 2);
 
   // Create canvas with exact size
   const canvas = createCanvas(canvasWidth, canvasHeight);
@@ -88,17 +76,16 @@ export async function renderGif(
   // Position graph - align top to padding
   const offsetX = minX;
   const offsetZ = minZ;
-  const centerX = padding;
-  const centerY = padding - minTopY; // Offset to make top align with padding
+  const centerX = PADDING;
+  const centerY = PADDING - minTopY; // Offset to make top align with padding
 
   // Precompute sorted contributions with rotated positions
   const sorted = contributions
     .map(c => {
       const x = c.week;
       const z = c.day;
-      // Isometric projection
-      const rotatedX = x * Math.cos(rotation) - z * Math.sin(rotation);
-      const rotatedZ = x * Math.sin(rotation) + z * Math.cos(rotation);
+      const rotatedX = x * Math.cos(ROTATION) - z * Math.sin(ROTATION);
+      const rotatedZ = x * Math.sin(ROTATION) + z * Math.cos(ROTATION);
       return { ...c, rotatedX, rotatedZ };
     })
     .sort((a, b) => a.rotatedZ - b.rotatedZ); // Front to back for proper depth
@@ -118,7 +105,7 @@ export async function renderGif(
 
       // Calculate screen position with isometric projection
       const screenX = centerX + (rotatedX - offsetX) * scale;
-      const screenY = centerY - barHeight * scale * heightScale + (rotatedZ - offsetZ) * scale * 0.5;
+      const screenY = centerY - barHeight * scale * HEIGHT_SCALE + (rotatedZ - offsetZ) * scale * DEPTH_PROJECTION_FACTOR;
 
       // Color based on contribution count
       let color: string;
@@ -129,9 +116,9 @@ export async function renderGif(
       else color = '#39d353';
 
       // Draw isometric 3D box
-      const boxWidth = scale * barWidthRatio;
-      const boxDepth = scale * barWidthRatio;
-      const barVisualHeight = barHeight * scale * heightScale;
+      const boxWidth = scale * BAR_WIDTH_RATIO;
+      const boxDepth = scale * BAR_WIDTH_RATIO;
+      const barVisualHeight = barHeight * scale * HEIGHT_SCALE;
 
       if (barVisualHeight > 0) {
         // Left face (darker)
