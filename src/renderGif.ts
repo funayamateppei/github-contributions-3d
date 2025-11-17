@@ -115,18 +115,29 @@ export async function renderGif(
       else if (count < 15) color = '#26a641';
       else color = '#39d353';
 
-      // Draw isometric 3D box
+      // Draw isometric 3D box with ROTATION applied
       const boxWidth = scale * BAR_WIDTH_RATIO;
       const boxDepth = scale * BAR_WIDTH_RATIO;
       const barVisualHeight = barHeight * scale * HEIGHT_SCALE;
 
       if (barVisualHeight > 0) {
+        // Calculate isometric projection offsets based on ROTATION
+        // For a box viewed from above with ROTATION angle:
+        // - Left/Right edges go along rotated X axis (±90° from view direction)
+        // - Depth edges go along rotated Z axis (parallel to view direction)
+        const leftOffsetX = -boxWidth / 2 * Math.cos(ROTATION - Math.PI / 2);
+        const leftOffsetY = -boxWidth / 2 * Math.sin(ROTATION - Math.PI / 2) * DEPTH_PROJECTION_FACTOR;
+        const rightOffsetX = boxWidth / 2 * Math.cos(ROTATION - Math.PI / 2);
+        const rightOffsetY = boxWidth / 2 * Math.sin(ROTATION - Math.PI / 2) * DEPTH_PROJECTION_FACTOR;
+        const depthOffsetX = boxDepth * Math.cos(ROTATION);
+        const depthOffsetY = boxDepth * Math.sin(ROTATION) * DEPTH_PROJECTION_FACTOR;
+
         // Left face (darker)
         ctx.fillStyle = adjustBrightness(color, 0.6);
         ctx.beginPath();
         ctx.moveTo(screenX, screenY + barVisualHeight);
-        ctx.lineTo(screenX - boxWidth / 2, screenY + barVisualHeight - boxDepth / 2);
-        ctx.lineTo(screenX - boxWidth / 2, screenY - boxDepth / 2);
+        ctx.lineTo(screenX + leftOffsetX, screenY + barVisualHeight + leftOffsetY);
+        ctx.lineTo(screenX + leftOffsetX, screenY + leftOffsetY);
         ctx.lineTo(screenX, screenY);
         ctx.closePath();
         ctx.fill();
@@ -135,8 +146,8 @@ export async function renderGif(
         ctx.fillStyle = adjustBrightness(color, 0.8);
         ctx.beginPath();
         ctx.moveTo(screenX, screenY + barVisualHeight);
-        ctx.lineTo(screenX + boxWidth / 2, screenY + barVisualHeight - boxDepth / 2);
-        ctx.lineTo(screenX + boxWidth / 2, screenY - boxDepth / 2);
+        ctx.lineTo(screenX + rightOffsetX, screenY + barVisualHeight + rightOffsetY);
+        ctx.lineTo(screenX + rightOffsetX, screenY + rightOffsetY);
         ctx.lineTo(screenX, screenY);
         ctx.closePath();
         ctx.fill();
@@ -145,9 +156,10 @@ export async function renderGif(
         ctx.fillStyle = adjustBrightness(color, 1.2);
         ctx.beginPath();
         ctx.moveTo(screenX, screenY);
-        ctx.lineTo(screenX - boxWidth / 2, screenY - boxDepth / 2);
-        ctx.lineTo(screenX, screenY - boxDepth);
-        ctx.lineTo(screenX + boxWidth / 2, screenY - boxDepth / 2);
+        ctx.lineTo(screenX + leftOffsetX, screenY + leftOffsetY);
+        ctx.lineTo(screenX + leftOffsetX + depthOffsetX, screenY + leftOffsetY + depthOffsetY);
+        ctx.lineTo(screenX + rightOffsetX + depthOffsetX, screenY + rightOffsetY + depthOffsetY);
+        ctx.lineTo(screenX + rightOffsetX, screenY + rightOffsetY);
         ctx.closePath();
         ctx.fill();
       }
