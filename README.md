@@ -1,96 +1,154 @@
 # GitHub Contributions 3D
 
-A 3D visualization of GitHub contribution activity, automatically generated daily via GitHub Actions.
+Transform your GitHub contribution graph into an animated 3D visualization!
 
-![3D Contribution Graph](./public/contribution-graph.gif)
+![3D Contribution Graph](./sample/contribution-graph.gif)
 
-## Features
+## ✨ Features
 
-- 3D bar graph representation of GitHub contributions
-- Animated GIF showing 360-degree rotation
-- Automatic daily updates via GitHub Actions
-- Private repository support
-- Color-coded based on contribution count
-- Direct GIF URL for embedding in profile README
+- 🎨 **3D bar graph** representation of GitHub contributions
+- 🎬 **Animated GIF** with bars growing from bottom to top
+- ⚙️ **Automatic daily updates** via GitHub Actions
+- 🔒 **Private repository support**
+- 🌈 **Color-coded** based on contribution count (GitHub's default color scheme)
+- 🔗 **Direct GIF URL** for embedding in profile README
 
-## Usage in GitHub Profile README
+## 🚀 Quick Start (No Local Setup Required!)
 
-You can embed the generated GIF directly in your GitHub profile README (works with both public and private repositories):
+**Just 3 steps to get your 3D contribution graph:**
+
+### Step 1: Fork this Repository
+
+1. Click the **Fork** button at the top right of this page
+2. This creates a copy of the repository in your GitHub account
+
+### Step 2: Enable GitHub Actions
+
+**Important:** Forked repositories have GitHub Actions disabled by default.
+
+1. Go to the **Actions** tab in your forked repository
+2. You'll see a message: "Workflows aren't being run on this forked repository"
+3. Click **"I understand my workflows, go ahead and enable them"**
+
+### Step 3: Run the Workflow
+
+#### Option A: Manual Run (Recommended for first time)
+
+1. Stay in the **Actions** tab
+2. Click **"Generate 3D Contribution Graph"** in the left sidebar
+3. Click **"Run workflow"** dropdown → **"Run workflow"** button
+4. Wait 2-3 minutes for the workflow to complete
+5. Check the **Code** tab, switch to the `assets` branch to see your generated GIF!
+
+#### Option B: Automatic Daily Updates
+
+Once you've run the workflow manually once, it will automatically run **daily at 00:00 UTC (9:00 AM JST)** to keep your graph up to date.
+
+### Step 4: Add to Your Profile README
+
+Add the following to your GitHub profile README (`YOUR-USERNAME/YOUR-USERNAME/README.md`):
 
 ```markdown
-![GitHub Contributions 3D](https://raw.githubusercontent.com/your-username/repository-name/assets/contribution-graph.gif)
+### 📊 My 3D Contribution Graph
+
+![My 3D Contribution Graph](https://raw.githubusercontent.com/YOUR-USERNAME/github-contributions-3d/assets/contribution-graph.gif)
 ```
 
-Replace `your-username` and `repository-name` with your actual GitHub username and repository name.
+**Replace `YOUR-USERNAME` with your actual GitHub username.**
 
-**Note**: This uses an orphan `assets` branch to store the GIF, keeping your main branch history clean. The raw content URL works even for private repositories when you're logged in to GitHub.
+> **Note:** The GIF is stored in an orphan `assets` branch to keep your main branch clean. Commits by `github-actions[bot]` won't affect your contribution graph.
 
-## Setup
+## 💻 Local Development
+
+Want to customize the visualization or run it locally? Follow these steps:
 
 ### Prerequisites
 
-- Node.js 20 or higher
-- GitHub account
+- **Node.js 20 or higher**
+- **npm** (comes with Node.js)
+- **Git**
 
 ### Installation
 
-1. Clone this repository
-2. Install dependencies:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/github-contributions-3d.git
+   cd github-contributions-3d
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-### Local Development
+   **Note:** The `canvas` package uses pre-built binaries for most platforms (macOS x64/ARM64, Windows, Linux), so additional system dependencies are usually **not required**. However, if you encounter installation errors, you may need to install native dependencies:
 
-**Note**: The project uses `node-canvas` for rendering, which works on all platforms including macOS, Linux, and Windows.
+   <details>
+   <summary><b>macOS (only if installation fails)</b></summary>
 
-To generate the 3D contribution graph locally (if your environment supports it):
-
-```bash
-# Set your GitHub username (optional: set GITHUB_TOKEN for higher rate limits)
-export GITHUB_USERNAME=your-github-username
-export GITHUB_TOKEN=your-github-token  # optional
-
-# Generate the GIF
-npm run generate
-```
-
-The generated GIF will be saved to `public/contribution-graph.gif`.
-
-The project now uses Canvas 2D rendering instead of WebGL, so it works reliably on all platforms without complex native dependencies.
-
-### GitHub Setup
-
-1. **Create/Use a GitHub repository** (can be public or private)
-
-2. **Push to GitHub**:
    ```bash
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
+   brew install pkg-config cairo pango libpng jpeg giflib librsvg
+   ```
+   </details>
+
+   <details>
+   <summary><b>Ubuntu/Debian (only if installation fails)</b></summary>
+
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+   ```
+   </details>
+
+   <details>
+   <summary><b>Windows</b></summary>
+
+   No additional dependencies needed. `npm install` should work out of the box.
+   </details>
+
+### Running Locally
+
+1. **Set environment variables:**
+
+   Create a `.env` file in the project root:
+   ```bash
+   GITHUB_USERNAME=your-github-username
+   GITHUB_TOKEN=your-github-personal-access-token  # optional, but recommended
    ```
 
-3. **Run the workflow**:
-   - Go to the "Actions" tab in your repository
-   - Select "Generate 3D Contribution Graph"
-   - Click "Run workflow" → "Run workflow"
-   - Wait for the workflow to complete (about 2-3 minutes)
+   - `GITHUB_USERNAME`: Your GitHub username (required)
+   - `GITHUB_TOKEN`: GitHub Personal Access Token (optional, but recommended to avoid rate limits)
+     - To create a token: GitHub Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token
+     - Required scope: `read:user` (for accessing public contribution data)
 
-4. **Use the GIF in your profile**:
-   - The GIF will be committed to the `assets` branch as `contribution-graph.gif`
-   - Use the raw GitHub URL in your profile README:
-   ```markdown
-   ![GitHub Contributions 3D](https://raw.githubusercontent.com/your-username/repository-name/assets/contribution-graph.gif)
+2. **Generate the GIF:**
+   ```bash
+   npm run generate
    ```
 
-The workflow automatically:
-- Generates the 3D contribution graph as a GIF
-- Commits it to the `assets` orphan branch (keeps main branch clean)
-- Runs daily at 00:00 UTC
-- Can be manually triggered anytime
-- Works with private repositories (GIF visible only to you when logged in)
+   This will:
+   - Compile TypeScript to JavaScript
+   - Fetch your contribution data from GitHub
+   - Generate the 3D visualization
+   - Save it to `public/contribution-graph.gif`
 
-## Project Structure
+3. **For development with auto-compilation:**
+   ```bash
+   npm run dev
+   ```
+
+### Customization
+
+You can customize the visualization by editing [src/renderGif.ts](src/renderGif.ts):
+
+- **Colors:** Modify the color scheme (lines 112-116)
+- **Animation:** Adjust frames, speed, or animation style (lines 14-16)
+- **Rotation angle:** Change the isometric view angle (line 24)
+- **Bar dimensions:** Adjust height scale and width ratio (lines 22-23)
+
+After making changes, run `npm run generate` to regenerate the GIF.
+
+## 📁 Project Structure
 
 ```
 github-contributions-3d/
@@ -110,13 +168,45 @@ github-contributions-3d/
 └── README.md
 ```
 
-## Technologies
+## 🛠 Technologies
 
 - **TypeScript** - Type-safe development
-- **node-canvas** - 2D Canvas rendering with 3D projection
-- **gifencoder** - GIF generation
-- **@octokit/rest** - GitHub API client
+- **node-canvas** - Canvas 2D API with isometric 3D projection
+- **gifencoder** - GIF animation generation
+- **@octokit/rest** - GitHub API client for fetching contribution data
+- **GitHub Actions** - Automated daily updates
 
-## License
+## 🎨 How It Works
 
-MIT
+1. **Fetch Data:** Uses GitHub's GraphQL API to retrieve your contribution data for the past year
+2. **Transform Data:** Processes the raw data into daily contribution counts
+3. **Render 3D:** Creates an isometric 3D projection using Canvas 2D API
+4. **Animate:** Generates multiple frames showing bars growing from bottom to top
+5. **Encode GIF:** Combines all frames into a single animated GIF file
+6. **Auto-commit:** GitHub Actions commits the GIF to the `assets` branch
+
+## 🤝 Contributing
+
+Contributions are welcome! If you have ideas for improvements or find bugs:
+
+1. **Fork** this repository
+2. **Create** a new branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add some amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+Or simply open an **Issue** to discuss your ideas!
+
+## ⭐ Show Your Support
+
+If you find this project useful, please consider giving it a star on GitHub! It helps others discover the project and motivates further development.
+
+## 📝 License
+
+MIT - feel free to use this project for your own GitHub profile!
+
+## 🙏 Acknowledgments
+
+- Inspired by GitHub's contribution graph
+- Built with TypeScript and node-canvas
+- Automated with GitHub Actions
