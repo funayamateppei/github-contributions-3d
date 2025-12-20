@@ -17,18 +17,32 @@ Transform your GitHub contribution graph into an animated 3D visualization!
 
 **Just 3 steps to get your 3D contribution graph:**
 
-### Step 1: Fork this Repository
+### Step 1: Clone or Fork this Repository
+
+#### Option A: Clone (Recommended)
+
+1. Click the **"Use this template"** button or clone this repository
+2. Create a new repository in your GitHub account
+
+```bash
+git clone https://github.com/funayamateppei/github-contributions-3d.git
+cd github-contributions-3d
+# Change remote to your own repository
+git remote set-url origin https://github.com/YOUR-USERNAME/your-repo-name.git
+git push -u origin main
+```
+
+#### Option B: Fork
 
 1. Click the **Fork** button at the top right of this page
 2. This creates a copy of the repository in your GitHub account
 
 ### Step 2: Enable GitHub Actions
 
-**Important:** Forked repositories have GitHub Actions disabled by default.
+**Note:** If you forked the repository, GitHub Actions is disabled by default.
 
-1. Go to the **Actions** tab in your forked repository
-2. You'll see a message: "Workflows aren't being run on this forked repository"
-3. Click **"I understand my workflows, go ahead and enable them"**
+1. Go to the **Actions** tab in your repository
+2. If you see a message: "Workflows aren't being run on this forked repository", click **"I understand my workflows, go ahead and enable them"**
 
 ### Step 3: Run the Workflow
 
