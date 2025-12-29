@@ -92,22 +92,15 @@ export async function renderGif(
     })
     .sort((a, b) => a.rotatedZ - b.rotatedZ) // Front to back for proper depth
 
-  // Render each frame with bars growing up then slowly shrinking down
-  const upFrames = frames // Frames for going up
-  const downFrames = frames // Frames for going down
-  const totalFrames = upFrames + downFrames
+  // Render each frame with bars growing up then shrinking down (seamless loop)
+  // Animation goes from small -> full -> small, and loops back seamlessly
+  const totalFrames = frames * 2
 
   for (let frame = 0; frame < totalFrames; frame++) {
-    let progress: number
-    if (frame < upFrames) {
-      // Going up with ease-out (fast start, slow end)
-      const t = (frame + 1) / upFrames
-      progress = 1 - Math.pow(1 - t, 3) // Ease-out cubic
-    } else {
-      // Going down slowly with ease-in-out (smooth and gentle)
-      const t = (frame - upFrames + 1) / downFrames
-      progress = 1 - t * t * (3 - 2 * t) // Ease-in-out (smoothstep)
-    }
+    // Use cosine wave for symmetric easing (slow at both ends, fast in middle)
+    // cos(0) = 1, cos(π) = -1, so we invert and normalize: (1 - cos(t * 2π)) / 2
+    const t = frame / totalFrames
+    const progress = (1 - Math.cos(t * 2 * Math.PI)) / 2
 
     // Clear canvas with transparent background
     ctx.clearRect(0, 0, canvasWidth, canvasHeight)
@@ -131,8 +124,9 @@ export async function renderGif(
 
       // Draw cute rounded cylinder (pill shape)
       const cylinderRadius = (scale * BAR_WIDTH_RATIO) / 2
-      const barVisualHeight = barHeight * scale * HEIGHT_SCALE
       const ellipseHeight = cylinderRadius * CYLINDER_SQUISH
+      const minBarHeight = ellipseHeight * 0.5 // Minimum height so bars are visible at progress=0
+      const barVisualHeight = Math.max(minBarHeight, barHeight * scale * HEIGHT_SCALE)
 
       if (barVisualHeight > 0) {
         // Center of the cylinder base
@@ -142,21 +136,6 @@ export async function renderGif(
         // Center of the cylinder top
         const topCenterX = screenX
         const topCenterY = screenY
-
-        // Draw shadow beneath cylinder
-        ctx.fillStyle = "rgba(0, 0, 0, 0.25)"
-        ctx.beginPath()
-        ctx.ellipse(
-          baseCenterX + cylinderRadius * 0.15,
-          baseCenterY + ellipseHeight * 0.6,
-          cylinderRadius * 1.1,
-          ellipseHeight * 0.8,
-          0,
-          0,
-          Math.PI * 2
-        )
-        ctx.closePath()
-        ctx.fill()
 
         // Draw cylinder body with rich gradient
         const bodyGradient = ctx.createLinearGradient(baseCenterX - cylinderRadius, baseCenterY, baseCenterX + cylinderRadius, baseCenterY)
