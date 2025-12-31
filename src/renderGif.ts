@@ -107,6 +107,9 @@ export async function renderGif(
 
     // Draw each bar with animated height
     sorted.forEach(({ count, rotatedX, rotatedZ }) => {
+      // Skip drawing bars with 0 contributions
+      if (count === 0) return
+
       const targetBarHeight = Math.max(0.1, count * 0.1)
       const barHeight = targetBarHeight * progress // Animate from 0 to target height
 
@@ -116,8 +119,7 @@ export async function renderGif(
 
       // GitHub-style green color palette (deeper/richer)
       let color: string
-      if (count === 0) color = "#161b22"
-      else if (count < 5) color = "#064420"
+      if (count < 5) color = "#064420"
       else if (count < 10) color = "#046b2d"
       else if (count < 15) color = "#059142"
       else color = "#06b54e"
