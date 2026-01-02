@@ -2,7 +2,7 @@
 
 Transform your GitHub contribution graph into an animated 3D visualization!
 
-![3D Contribution Graph](./sample/contribution-graph.gif)
+![3D Contribution Graph](https://raw.githubusercontent.com/funayamateppei/github-contributions-3d/assets/contribution-graph.gif)
 
 ## ✨ Features
 
@@ -85,12 +85,14 @@ Want to customize the visualization or run it locally? Follow these steps:
 ### Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/YOUR-USERNAME/github-contributions-3d.git
    cd github-contributions-3d
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
@@ -103,6 +105,7 @@ Want to customize the visualization or run it locally? Follow these steps:
    ```bash
    brew install pkg-config cairo pango libpng jpeg giflib librsvg
    ```
+
    </details>
 
    <details>
@@ -112,6 +115,7 @@ Want to customize the visualization or run it locally? Follow these steps:
    sudo apt-get update
    sudo apt-get install -y libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
    ```
+
    </details>
 
    <details>
@@ -125,6 +129,7 @@ Want to customize the visualization or run it locally? Follow these steps:
 1. **Set environment variables:**
 
    Create a `.env` file in the project root:
+
    ```bash
    GITHUB_USERNAME=your-github-username
    GITHUB_TOKEN=your-github-personal-access-token  # optional, but recommended
@@ -136,11 +141,13 @@ Want to customize the visualization or run it locally? Follow these steps:
      - Required scope: `read:user` (for accessing public contribution data)
 
 2. **Generate the GIF:**
+
    ```bash
    npm run generate
    ```
 
    This will:
+
    - Compile TypeScript to JavaScript
    - Fetch your contribution data from GitHub
    - Generate the 3D visualization
