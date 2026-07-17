@@ -2,7 +2,7 @@
 
 Transform your GitHub contribution graph into an animated 3D visualization!
 
-![3D Contribution Graph](https://raw.githubusercontent.com/funayamateppei/github-contributions-3d/assets/contribution-graph.gif)
+![3D Contribution Graph](https://funayamateppei.github.io/github-contributions-3d/contribution-graph.gif)
 
 ## ✨ Features
 
@@ -37,12 +37,19 @@ git push -u origin main
 1. Click the **Fork** button at the top right of this page
 2. This creates a copy of the repository in your GitHub account
 
-### Step 2: Enable GitHub Actions
+### Step 2: Enable GitHub Actions and Pages
 
 **Note:** If you forked the repository, GitHub Actions is disabled by default.
 
 1. Go to the **Actions** tab in your repository
 2. If you see a message: "Workflows aren't being run on this forked repository", click **"I understand my workflows, go ahead and enable them"**
+
+Then enable GitHub Pages, which is where the generated GIF is published:
+
+1. Go to **Settings** → **Pages**
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**
+
+**Note:** Pages requires the repository to be **public** (or a GitHub Pro account for private repositories).
 
 ### Step 3: Run the Workflow
 
@@ -52,7 +59,7 @@ git push -u origin main
 2. Click **"Generate 3D Contribution Graph"** in the left sidebar
 3. Click **"Run workflow"** dropdown → **"Run workflow"** button
 4. Wait 2-3 minutes for the workflow to complete
-5. Check the **Code** tab, switch to the `assets` branch to see your generated GIF!
+5. Open `https://YOUR-USERNAME.github.io/github-contributions-3d/` to see your generated GIF!
 
 #### Option B: Automatic Daily Updates
 
@@ -65,12 +72,12 @@ Add the following to your GitHub profile README (`YOUR-USERNAME/YOUR-USERNAME/RE
 ```markdown
 ### 📊 My 3D Contribution Graph
 
-![My 3D Contribution Graph](https://raw.githubusercontent.com/YOUR-USERNAME/github-contributions-3d/assets/contribution-graph.gif)
+![My 3D Contribution Graph](https://YOUR-USERNAME.github.io/github-contributions-3d/contribution-graph.gif)
 ```
 
 **Replace `YOUR-USERNAME` with your actual GitHub username.**
 
-> **Note:** The GIF is stored in an orphan `assets` branch to keep your main branch clean. Commits by `github-actions[bot]` won't affect your contribution graph. The branch is force-pushed as a single commit on every run, so the GIF history never accumulates and clones stay small.
+> **Note:** The GIF is published to GitHub Pages as a build artifact and is never committed to the repository. A ~4MB GIF is binary, so it barely compresses between revisions — committing one daily would pile up in the history and make clones heavy. Publishing it through Pages keeps the repository history free of it entirely, and no `github-actions[bot]` commits are created.
 
 ## 💻 Local Development
 
@@ -180,7 +187,7 @@ github-contributions-3d/
 ├── dist/                     # Compiled JavaScript (generated)
 ├── public/
 │   ├── index.html            # GitHub Pages landing page
-│   └── contribution-graph.gif # Generated GIF (auto-updated)
+│   └── contribution-graph.gif # Generated GIF (git-ignored; published via Pages)
 ├── .github/
 │   └── workflows/
 │       └── generate.yml      # Daily generation workflow
@@ -204,7 +211,7 @@ github-contributions-3d/
 3. **Render 3D:** Creates an isometric 3D projection using Canvas 2D API
 4. **Animate:** Generates multiple frames showing bars growing from bottom to top
 5. **Encode GIF:** Combines all frames into a single animated GIF file
-6. **Auto-commit:** GitHub Actions commits the GIF to the `assets` branch
+6. **Publish:** GitHub Actions uploads `public/` as a Pages artifact and deploys it
 
 ## 🤝 Contributing
 
