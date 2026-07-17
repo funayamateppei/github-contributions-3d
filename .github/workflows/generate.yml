@@ -10,17 +10,26 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+# Pages へのデプロイは同時に走らせられないため、後発の実行を待たせる
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   generate:
     runs-on: ubuntu-latest
 
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -39,20 +48,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run generate
 
-      - name: Push to assets branch
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+      # GIF はバイナリのため差分圧縮が効かず、git に積み上げると1世代 約4MB が
+      # そのまま履歴に残り clone が重くなる。Pages アーティファクトとして配信し、
+      # リポジトリの履歴には一切残さない。
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
 
-          # GIF はバイナリのため差分圧縮がほとんど効かず、追記し続けると
-          # 1世代 約4MB がそのまま履歴に積み上がり clone が重くなる。
-          # 毎回 orphan の単一コミットとして作り直し、force push で常に1世代だけ保持する。
-          cp public/contribution-graph.gif "${RUNNER_TEMP}/contribution-graph.gif"
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: public
 
-          git checkout --orphan assets-new
-          git rm -rf --cached . >/dev/null
-          mv "${RUNNER_TEMP}/contribution-graph.gif" contribution-graph.gif
-
-          git add -f contribution-graph.gif
-          git commit -m "Update 3D contribution graph"
-          git push --force origin assets-new:assets
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

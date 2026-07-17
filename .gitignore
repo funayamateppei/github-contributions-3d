@@ -26,5 +26,5 @@ build/
 # TypeScript
 *.tsbuildinfo
 
-# Keep the generated GIF in version control
+# 生成物の GIF は Pages アーティファクトとして配信するため、履歴には残さない
 public/contribution-graph.gif
