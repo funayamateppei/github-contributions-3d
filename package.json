@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^20.0.2",
-    "canvas": "^2.11.2",
+    "canvas": "^3.2.3",
     "dotenv": "^17.2.3",
     "gifencoder": "^2.0.1"
   },
@@ -29,5 +29,10 @@
     "@types/node": "^20.10.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
+  },
+  "overrides": {
+    "gifencoder": {
+      "canvas": "$canvas"
+    }
   }
 }
