@@ -70,7 +70,7 @@ Add the following to your GitHub profile README (`YOUR-USERNAME/YOUR-USERNAME/RE
 
 **Replace `YOUR-USERNAME` with your actual GitHub username.**
 
-> **Note:** The GIF is stored in an orphan `assets` branch to keep your main branch clean. Commits by `github-actions[bot]` won't affect your contribution graph.
+> **Note:** The GIF is stored in an orphan `assets` branch to keep your main branch clean. Commits by `github-actions[bot]` won't affect your contribution graph. The branch is force-pushed as a single commit on every run, so the GIF history never accumulates and clones stay small.
 
 ## 💻 Local Development
 
