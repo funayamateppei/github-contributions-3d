@@ -17,21 +17,6 @@ Regenerated daily by GitHub Actions, published on GitHub Pages, and never commit
 - 🔗 **Direct GIF URL** for embedding in profile README
 - 🧹 **Clean history**: the GIF is a GitHub Pages artifact, never a commit
 
-## 🆚 How is this different from github-profile-3d-contrib?
-
-[yoshi389111/github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib) is the most popular 3D contribution calendar and a great choice. This project takes a different approach:
-
-|                               | **github-contributions-3d** (this project)              | github-profile-3d-contrib                     |
-| ----------------------------- | ------------------------------------------------------- | --------------------------------------------- |
-| Output format                 | Animated **GIF** (bars grow up from the ground)         | SVG (static, plus some animated variants)     |
-| Where the image is stored     | **GitHub Pages** artifact                               | Committed to your repository                  |
-| Bot commits in your history   | **None**                                                | Yes, the Action commits the generated image   |
-| How you install it            | Template repository / fork                              | `uses:` step in your own workflow             |
-| Customization                 | Edit the TypeScript renderer ([src/renderGif.ts](src/renderGif.ts)) | Built-in themes (green, season, night, …) |
-
-Choose **this project** if you want an animated GIF and a commit history free of generated files.
-Choose **github-profile-3d-contrib** if you prefer SVG output and a drop-in GitHub Action.
-
 ## 🚀 Quick Start (No Local Setup Required!)
 
 **Just 4 steps to get your 3D contribution graph:**
