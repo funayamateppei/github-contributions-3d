@@ -1,7 +1,7 @@
 {
   "name": "github-contributions-3d",
   "version": "1.0.0",
-  "description": "Generate 3D GitHub contribution graph as animated GIF",
+  "description": "Turn your GitHub contribution graph into an animated 3D GIF for your profile README. Regenerated daily by GitHub Actions and published on GitHub Pages.",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
@@ -12,11 +12,23 @@
   },
   "keywords": [
     "github",
-    "contributions",
+    "github-profile",
+    "github-profile-readme",
+    "profile-readme",
+    "github-contributions",
+    "contribution-graph",
+    "github-contribution-graph",
     "3d",
-    "visualization"
+    "isometric",
+    "animated-gif",
+    "gif",
+    "visualization",
+    "github-actions",
+    "github-pages",
+    "typescript",
+    "node-canvas"
   ],
-  "author": "",
+  "author": "funayamateppei",
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^20.0.2",
@@ -34,5 +46,13 @@
     "gifencoder": {
       "canvas": "$canvas"
     }
+  },
+  "homepage": "https://funayamateppei.github.io/github-contributions-3d/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/funayamateppei/github-contributions-3d.git"
+  },
+  "bugs": {
+    "url": "https://github.com/funayamateppei/github-contributions-3d/issues"
   }
 }

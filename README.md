@@ -1,8 +1,11 @@
 # GitHub Contributions 3D
 
-Transform your GitHub contribution graph into an animated 3D visualization!
+**Turn your GitHub contribution graph into an animated 3D GIF for your profile README.**
+Regenerated daily by GitHub Actions, published on GitHub Pages, and never committed to your repository.
 
 ![3D Contribution Graph](https://funayamateppei.github.io/github-contributions-3d/contribution-graph.gif)
+
+> **TL;DR** — Use this template (or fork) → enable Actions and Pages → run the workflow once → paste one image URL into your profile README. No local setup, no bot commits, no binary files in your repo.
 
 ## ✨ Features
 
@@ -12,17 +15,40 @@ Transform your GitHub contribution graph into an animated 3D visualization!
 - 🔒 **Private repository support**
 - 🌈 **Color-coded** based on contribution count (GitHub's default color scheme)
 - 🔗 **Direct GIF URL** for embedding in profile README
+- 🧹 **Clean history**: the GIF is a GitHub Pages artifact, never a commit
+
+## 🆚 How is this different from github-profile-3d-contrib?
+
+[yoshi389111/github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib) is the most popular 3D contribution calendar and a great choice. This project takes a different approach:
+
+|                               | **github-contributions-3d** (this project)              | github-profile-3d-contrib                     |
+| ----------------------------- | ------------------------------------------------------- | --------------------------------------------- |
+| Output format                 | Animated **GIF** (bars grow up from the ground)         | SVG (static, plus some animated variants)     |
+| Where the image is stored     | **GitHub Pages** artifact                               | Committed to your repository                  |
+| Bot commits in your history   | **None**                                                | Yes, the Action commits the generated image   |
+| How you install it            | Template repository / fork                              | `uses:` step in your own workflow             |
+| Customization                 | Edit the TypeScript renderer ([src/renderGif.ts](src/renderGif.ts)) | Built-in themes (green, season, night, …) |
+
+Choose **this project** if you want an animated GIF and a commit history free of generated files.
+Choose **github-profile-3d-contrib** if you prefer SVG output and a drop-in GitHub Action.
 
 ## 🚀 Quick Start (No Local Setup Required!)
 
-**Just 3 steps to get your 3D contribution graph:**
+**Just 4 steps to get your 3D contribution graph:**
 
-### Step 1: Clone or Fork this Repository
+### Step 1: Create Your Copy of this Repository
 
-#### Option A: Clone (Recommended)
+#### Option A: Use this template (Recommended)
 
-1. Click the **"Use this template"** button or clone this repository
-2. Create a new repository in your GitHub account
+1. Click the green **"Use this template"** button at the top of this page → **Create a new repository**
+2. Name it `github-contributions-3d` so the GIF URL matches the examples below (any name works; just adjust the URL)
+
+#### Option B: Fork
+
+1. Click the **Fork** button at the top right of this page
+2. This creates a copy of the repository in your GitHub account
+
+#### Option C: Clone and push to your own repository
 
 ```bash
 git clone https://github.com/funayamateppei/github-contributions-3d.git
@@ -31,11 +57,6 @@ cd github-contributions-3d
 git remote set-url origin https://github.com/YOUR-USERNAME/your-repo-name.git
 git push -u origin main
 ```
-
-#### Option B: Fork
-
-1. Click the **Fork** button at the top right of this page
-2. This creates a copy of the repository in your GitHub account
 
 ### Step 2: Enable GitHub Actions and Pages
 
@@ -212,6 +233,33 @@ github-contributions-3d/
 4. **Animate:** Generates multiple frames showing bars growing from bottom to top
 5. **Encode GIF:** Combines all frames into a single animated GIF file
 6. **Publish:** GitHub Actions uploads `public/` as a Pages artifact and deploys it
+
+## ❓ FAQ
+
+**Does it include private contributions?**
+Yes, as long as your GitHub profile is set to *Include private contributions on my profile* (Settings → Public profile → Contributions & Activity). Counts come from the GitHub GraphQL API, which respects that setting.
+
+**Will it add commits to my repository?**
+No. The GIF is uploaded as a GitHub Pages artifact, so your commit history stays clean and the repository never grows.
+
+**How often is the GIF updated?**
+Once a day at 00:00 UTC, plus on every push to `main`. You can also trigger it manually from the Actions tab.
+
+**Can I use it on a private repository?**
+GitHub Pages on private repositories requires GitHub Pro, Team, or Enterprise. On the Free plan, keep the repository public. The GIF only shows contribution counts, not code.
+
+**Do I need a personal access token?**
+Not in GitHub Actions. The workflow uses the automatically provided `GITHUB_TOKEN`. A token is only needed for local runs, to avoid API rate limits.
+
+**Can I change colors, size, or animation speed?**
+Yes. Everything is in [src/renderGif.ts](src/renderGif.ts). See [Customization](#customization).
+
+## 🇯🇵 日本語
+
+GitHub のコントリビューショングラフ（いわゆる「草」）を、3D の棒グラフが伸び上がるアニメーション GIF に変換して、プロフィール README に貼れるようにするツールです。GitHub Actions が毎日自動で再生成し、GitHub Pages に配信します。GIF をリポジトリにコミットしないので、履歴が肥大化しません。
+
+- 導入手順（日本語の解説記事）: [【GitHub Actionsで自動更新】GitHubプロフィールを「3Dアニメーションの草」でリッチにする方法](https://zenn.dev/funayamateppei/articles/dfceeb419d3f1a)
+- ローカル環境は不要です。Use this template（または Fork）→ Actions と Pages を有効化 → ワークフローを 1 回実行 → README に画像 URL を貼るだけです。
 
 ## 🤝 Contributing
 

@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Contributions 3D</title>
+    <title>GitHub Contributions 3D — animated 3D GIF of your contribution graph</title>
+    <meta name="description" content="Turn your GitHub contribution graph into an animated 3D GIF for your profile README. Regenerated daily by GitHub Actions and published on GitHub Pages, with no commits to your repository.">
+    <link rel="canonical" href="https://funayamateppei.github.io/github-contributions-3d/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="GitHub Contributions 3D">
+    <meta property="og:description" content="Animated 3D GIF of your GitHub contribution graph, regenerated daily by GitHub Actions.">
+    <meta property="og:url" content="https://funayamateppei.github.io/github-contributions-3d/">
+    <meta property="og:image" content="https://funayamateppei.github.io/github-contributions-3d/contribution-graph.gif">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
         * {
             margin: 0;
@@ -81,12 +89,14 @@
             font-size: 0.9rem;
         }
 
-        .footer a {
+        .footer a,
+        .info a {
             color: #58a6ff;
             text-decoration: none;
         }
 
-        .footer a:hover {
+        .footer a:hover,
+        .info a:hover {
             text-decoration: underline;
         }
 
@@ -104,7 +114,7 @@
 <body>
     <div class="container">
         <h1>GitHub Contributions 3D</h1>
-        <p>A 3D visualization of GitHub contribution activity</p>
+        <p>An animated 3D GIF of a GitHub contribution graph, regenerated daily by GitHub Actions</p>
 
         <div class="graph-container">
             <img src="contribution-graph.gif" alt="3D GitHub Contributions Graph" id="contributionGraph">
@@ -114,11 +124,12 @@
             <h2>About</h2>
             <p>This visualization shows GitHub contribution activity as a 3D bar graph.</p>
             <p>Each bar represents a day, with the height corresponding to the number of contributions.</p>
-            <p>The graph is automatically updated daily via GitHub Actions.</p>
+            <p>The graph is automatically updated daily via GitHub Actions and published on GitHub Pages, so nothing is committed to the repository.</p>
+            <p>Want one for your own profile README? <a href="https://github.com/funayamateppei/github-contributions-3d" target="_blank" rel="noopener">Get the template on GitHub</a>.</p>
         </div>
 
         <div class="footer">
-            <p>Generated with <a href="https://github.com" target="_blank">GitHub API</a> and <a href="https://threejs.org" target="_blank">Three.js</a></p>
+            <p>Generated with the <a href="https://docs.github.com/en/graphql" target="_blank" rel="noopener">GitHub GraphQL API</a> and <a href="https://github.com/Automattic/node-canvas" target="_blank" rel="noopener">node-canvas</a> · <a href="https://github.com/funayamateppei/github-contributions-3d" target="_blank" rel="noopener">Source on GitHub</a></p>
             <p id="lastUpdated">Last updated: <span id="updateTime">Loading...</span></p>
         </div>
     </div>
